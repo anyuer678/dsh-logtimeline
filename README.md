@@ -65,9 +65,12 @@ The plugin shells out to a vendored copy of the LogTimeline Python CLI (`python/
 ```sh
 npm install --legacy-peer-deps   # peer deps are provided by the DSH host runtime
 npm run typecheck
-npm run test                     # integration tests against the real vendored Python
+npm run test                     # integration tests: real vendored Python + host-assembly smoke
 npm run build
+python scripts/run-upstream-tests.py   # upstream LogTimeline pytest suite against the vendored code
 ```
+
+`tests/query.test.ts` runs the real vendored Python CLI against fixture logs; `tests/host.test.ts` loads the built plugin (`lib/`) into a minimal Cordis container, applies it, and validates the canonical value against the `output.schema` contract. Peer packages (`@deepseek-ai/dsh-*`) are installed as devDependencies so the runtime import chain resolves outside a DSH host.
 
 ## License
 

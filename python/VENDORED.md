@@ -29,4 +29,7 @@
 
 ## 同步上游
 
-升级 vendored 代码时：重新复制上游文件 → 重新应用上述改动（llm_summary 两处 + lq.py 一处）→ 运行 `npx vitest run`（`tests/query.test.ts` 覆盖真实 Python 集成路径，含 `--since` 时区用例）验证。
+升级 vendored 代码时：重新复制上游文件 → 重新应用上述改动（llm_summary 两处 + lq.py 一处）→ 运行两道验证：
+
+1. `python scripts/run-upstream-tests.py` —— 用 vendored 代码跑上游 124 例 pytest（sys.path 指向 `python/`，确保测的是 vendored 版本）
+2. `npx vitest run` —— `tests/query.test.ts` 覆盖真实 Python 集成路径（含 `--since` 时区用例、0 命中、取消、超时）
