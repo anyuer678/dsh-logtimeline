@@ -88,6 +88,14 @@ describe('runLogQuery (real vendored Python)', () => {
     expect(hit.filter.total_matched).toBe(25)
   })
 
+  it('reports a timeout (not cancellation) when the query exceeds the budget', async () => {
+    // 5ms 预算：Python 冷启动 + 文件过滤不可能在 5ms 内完成，稳定触发 execFile 超时 kill
+    const fast = resolveConfig({ timeoutMs: 5 })
+    await expect(
+      runLogQuery({ time_text: '2026-07-03', files: [fixture] }, fast, new AbortController().signal),
+    ).rejects.toThrow(/超时/)
+  })
+
   it('rejects with an AbortError when the signal is aborted', async () => {
     const ac = new AbortController()
     ac.abort() // 已取消的 signal：execFile 立即以 AbortError 失败
