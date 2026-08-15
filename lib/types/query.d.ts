@@ -41,6 +41,7 @@ export interface LogQueryResult {
             warns: number;
             infos: number;
             debugs: number;
+            others: number;
         };
         lines: Array<{
             lineno: number;

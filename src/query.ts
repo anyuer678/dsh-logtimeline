@@ -46,7 +46,7 @@ export interface LogQueryResult {
     time_span_found: boolean
     file_stats: Record<string, number>
     file_errors: Record<string, string>
-    stats: { errors: number; warns: number; infos: number; debugs: number }
+    stats: { errors: number; warns: number; infos: number; debugs: number; others: number }
     lines: Array<{ lineno: number; timestamp: string | null; raw: string }>
   }
   analysis: {
@@ -57,6 +57,9 @@ export interface LogQueryResult {
     tokens_used: number
   } | null
 }
+
+/** 模型可请求的最大行数上限：防止意外拉取海量日志进上下文。 */
+const MAX_LINES_CAP = 5_000
 
 /** Run the vendored logtimeline CLI in offline mode and parse its JSON output. */
 export async function runLogQuery(
@@ -77,7 +80,9 @@ export async function runLogQuery(
   }
   if (args.dir) argv.push('--dir', args.dir)
   if (args.pattern) argv.push('--pattern', args.pattern)
-  if (args.max_lines !== undefined) argv.push('--max-lines', String(Math.max(0, Math.floor(args.max_lines))))
+  if (args.max_lines !== undefined) {
+    argv.push('--max-lines', String(Math.min(MAX_LINES_CAP, Math.max(0, Math.floor(args.max_lines)))))
+  }
   if (args.since) argv.push('--since', args.since)
   if (args.timezone) argv.push('--timezone', args.timezone)
 
@@ -89,32 +94,45 @@ export async function runLogQuery(
   })
 
   const text = stdout.trim()
+  // 退出码语义（lq.py）：0 成功 · 1 参数错误 · 2 无匹配文件/0 行命中（仍输出合法 JSON）
+  // 非零退出码不一定是失败——先尝试解析 stdout；解析失败才按执行失败报错。
   if (!text) {
-    throw new Error(`log_query 无输出（stderr：${trimTail(stderr)}）`)
+    throw new Error(`log_query 无输出（exit ${lastExitCode ?? '?'}；stderr：${trimTail(stderr)}）`)
   }
   try {
     return JSON.parse(text) as LogQueryResult
   } catch (err) {
-    throw new Error(`log_query 输出不是合法 JSON：${err instanceof Error ? err.message : String(err)}`)
+    throw new Error(
+      `log_query 执行失败（exit ${lastExitCode ?? '?'}）：${trimTail(stderr) || (err instanceof Error ? err.message : String(err))}`,
+    )
   }
 }
 
-/** Promisified execFile that surfaces the exit code as an error. */
+/** 最近一次子进程退出码（供错误消息回显；成功路径不关心）。 */
+let lastExitCode: number | undefined
+
+/** Promisified execFile: resolves with stdout/stderr/code, rejects only on spawn/signal errors. */
 function execFileAsync(
   file: string,
   args: string[],
   opts: { signal: AbortSignal; timeout: number; maxBuffer: number; windowsHide: boolean },
-): Promise<{ stdout: string; stderr: string }> {
+): Promise<{ stdout: string; stderr: string; code: number }> {
   return new Promise((resolve, reject) => {
     execFile(file, args, opts, (error, stdout, stderr) => {
       if (error) {
-        // Preserve the child's own stderr (Chinese diagnostics) as the message.
-        const detail = trimTail(stderr)
-        const message = detail || error.message
-        reject(new Error(`log_query 执行失败（exit ${(error as NodeJS.ErrnoException).code ?? '?'}）：${message}`))
+        const code = (error as NodeJS.ErrnoException).code
+        // 数字 = 进程已运行并退出（如 2）；字符串 = spawn 级失败（如 "ENOENT"）
+        if (typeof code !== 'number') {
+          reject(new Error(`log_query 无法启动 ${file}（${code ?? '未知'}）：${error.message}。请确认 Python 3.9+ 已安装并在 PATH 中。`))
+          return
+        }
+        // 进程已运行并退出（exit code 非零）：交给调用方按 stdout 解析结果
+        lastExitCode = code
+        resolve({ stdout, stderr, code })
         return
       }
-      resolve({ stdout, stderr })
+      lastExitCode = 0
+      resolve({ stdout, stderr, code: 0 })
     })
   })
 }

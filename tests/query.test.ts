@@ -62,9 +62,23 @@ describe('runLogQuery (real vendored Python)', () => {
     expect(r.time_range.start).toBe('2026-07-03 09:00:00')
   })
 
+  it('returns an empty result when nothing matches (upstream exit 2, not an error)', async () => {
+    // 上游 lq.py 在 0 命中时退出码为 2，但 stdout 仍是合法 JSON——必须作为成功结果返回
+    // 用全量明确日期时间戳的 fixture：查询 2026-01-01 必然 0 命中
+    const dated = path.resolve(__dirname, 'fixtures', 'dated.log')
+    const r = await runLogQuery(
+      { time_text: '2026-01-01', files: [dated] },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.filter.total_matched).toBe(0)
+    expect(r.filter.lines.length).toBe(0)
+    expect(r.filter.stats).toMatchObject({ errors: 0, others: 0 })
+  })
+
   it('scans a directory recursively with a glob pattern', async () => {
     const r = await runLogQuery(
-      { time_text: '2026-07-03', dir: path.dirname(fixture), pattern: '*.log', max_lines: 10 },
+      { time_text: '2026-07-03', dir: path.dirname(fixture), pattern: 'demo.log', max_lines: 10 },
       cfg,
       new AbortController().signal,
     )
