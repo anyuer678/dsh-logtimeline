@@ -54,6 +54,8 @@ GitHub 仓库 → Settings → Topics → 添加：
 
 ## 注意事项
 
-- 依赖 Python 3.9+：README 已写明，用户缺 Python 时会在 tool 调用时报清晰错误
+- 依赖 Python 3.9+：Windows 无 `python` 命令时自动回退 `py -3`；都没有时工具报可操作错误。运行时统一加 `-B`，vendored 目录不产生 `__pycache__`
 - 离线零依赖是卖点：不要为「LLM 归因」默认开 LLM 模式（agent 自己能归因）
+- 版本对齐：peer 与测试均基于 `@deepseek-ai/dsh-tools@0.1.0-rc.6` 线；dsh 生态快速迭代（官方声明会有 breaking change），升级宿主前先跑 `npm run test` 与宿主模拟
+- 不带 invariant companion（与 dsh-market 等生态主流一致，避免 base profile 无 `invariants` 服务时的 boot 风险）
 - vendored Python 升级流程见 `python/VENDORED.md`

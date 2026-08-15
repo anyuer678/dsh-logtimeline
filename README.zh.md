@@ -17,11 +17,23 @@ agent 排查问题时最常问的就是"昨天下午 3 点发生了什么"。通
 
 ## 安装
 
-前置条件：dsh profile（`web` 或 `headless`）+ PATH 上有 **Python 3.9+**。
+前置条件：dsh profile（`web` 或 `headless`）+ **Python 3.9+**（Windows 上自动回退检测 `py` launcher）。
+
+**本地/开发安装**（checkout 后）：
 
 ```sh
-dsh plugin --profile web add anyuer678/dsh-logtimeline
+git clone https://github.com/anyuer678/dsh-logtimeline.git
+dsh plugin --profile web add file:/path/to/dsh-logtimeline
 ```
+
+**社区安装**：进入 [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin) 列表后，通过插件市场安装（market 支持 GitHub-only 插件）：
+
+```sh
+dsh plugin --profile web add dshmarket
+# 然后：Settings → Plugin Market → 搜索 dsh-logtimeline → 一键安装
+```
+
+兼容性：测试于 `@deepseek-ai/dsh-tools@0.1.0-rc.6`（当前发布线，如 `dsh-base@0.1.0-rc.5`）。
 
 ## 使用
 

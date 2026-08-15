@@ -17,18 +17,23 @@ Coding agents constantly need to answer "what happened around 3pm yesterday?". G
 
 ## Install
 
-Prerequisites: a dsh profile (`web` or `headless`), **Python 3.9+** on `PATH`.
+Prerequisites: a dsh profile (`web` or `headless`), and **Python 3.9+** (on Windows, the `py` launcher is auto-detected as a fallback).
 
-```sh
-dsh plugin --profile web add anyuer678/dsh-logtimeline
-```
-
-Or from a local checkout:
+**Local / development install** (from a checkout):
 
 ```sh
 git clone https://github.com/anyuer678/dsh-logtimeline.git
-# add it via your plugin manager / cordis.patch.yml
+dsh plugin --profile web add file:/path/to/dsh-logtimeline
 ```
+
+**Community install**: once listed in [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin), install via the plugin market (GitHub-only plugins are supported):
+
+```sh
+dsh plugin --profile web add dshmarket
+# then: Settings → Plugin Market → search "dsh-logtimeline" → one-click install
+```
+
+Compatibility: tested against `@deepseek-ai/dsh-tools@0.1.0-rc.6` (the current harness release line, e.g. `dsh-base@0.1.0-rc.5`).
 
 ## Usage
 
@@ -70,7 +75,7 @@ npm run build
 python scripts/run-upstream-tests.py   # upstream LogTimeline pytest suite against the vendored code
 ```
 
-`tests/query.test.ts` runs the real vendored Python CLI against fixture logs; `tests/host.test.ts` loads the built plugin (`lib/`) into a minimal Cordis container, applies it, and validates the canonical value against the `output.schema` contract. Peer packages (`@deepseek-ai/dsh-*`) are installed as devDependencies so the runtime import chain resolves outside a DSH host.
+`tests/query.test.ts` runs the real vendored Python CLI against fixture logs; `tests/host.test.ts` loads the built plugin (`lib/`) into a minimal Cordis container, applies it, and validates the canonical value against the `output.schema` contract. Peer packages (`@deepseek-ai/dsh-*`, pinned to the `0.1.0-rc.6` line) are installed as devDependencies so the runtime import chain resolves outside a DSH host.
 
 ## License
 

@@ -1,12 +1,10 @@
 # Bundle patch applied over the selected DSH profile when this package is listed
 # in `dsh.profile.bundles`. The row id is deployment-local; the package name
 # must match package.json.
+#
+# 注：生态主流插件（dsh-market、dsh-doctor 等）均不带 invariant companion，
+# base profile 也未显式挂载 `invariants` 服务行，故不提供，避免 boot 风险。
 
 - insert:
     - id: logtimeline
       name: 'dsh-logtimeline'
-
-    # DSH packages own an invariant companion; keep this row when the selected
-    # base profile provides the `invariants` service.
-    - id: logtimeline-invariant
-      name: 'dsh-logtimeline/invariant'
