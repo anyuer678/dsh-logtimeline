@@ -76,15 +76,24 @@ describe('runLogQuery (real vendored Python)', () => {
     expect(r.filter.stats).toMatchObject({ errors: 0, others: 0 })
   })
 
-  it('handles concurrent queries without mixing exit codes', async () => {
+  it('runs concurrent queries without cross-talk (smoke)', async () => {
+    // 并发冒烟：一个 0 命中（exit 2）+ 一个正常命中（exit 0），验证基本并发不串。
+    // 注意：成功路径不读取退出码，真正的退出码隔离回归要靠错误路径单测（execFileAsync 私有）。
     const dated = path.resolve(__dirname, 'fixtures', 'dated.log')
-    // 并发：一个 0 命中（exit 2）+ 一个正常命中（exit 0），都必须正确返回
     const [empty, hit] = await Promise.all([
       runLogQuery({ time_text: '2026-01-01', files: [dated] }, cfg, new AbortController().signal),
       runLogQuery({ time_text: '2026-07-03', files: [fixture], max_lines: 10 }, cfg, new AbortController().signal),
     ])
     expect(empty.filter.total_matched).toBe(0)
     expect(hit.filter.total_matched).toBe(25)
+  })
+
+  it('rejects with an AbortError when the signal is aborted', async () => {
+    const ac = new AbortController()
+    ac.abort() // 已取消的 signal：execFile 立即以 AbortError 失败
+    await expect(
+      runLogQuery({ time_text: '2026-07-03', files: [fixture] }, cfg, ac.signal),
+    ).rejects.toMatchObject({ name: 'AbortError' })
   })
 
   it('scans a directory recursively with a glob pattern', async () => {

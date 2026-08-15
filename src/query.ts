@@ -118,11 +118,17 @@ function execFileAsync(
     execFile(file, args, opts, (error, stdout, stderr) => {
       if (error) {
         const code = (error as NodeJS.ErrnoException).code
-        // 数字 = 进程已运行并退出（如 2）；字符串 = spawn 级失败（如 "ENOENT"）
+        // 数字 = 进程已运行并退出（如 2）；字符串 = spawn/取消/超时级失败
         if (typeof code !== 'number') {
-          // 取消（exec.signal abort）也是一条 spawn 级路径：给出准确消息
-          if (code === 'ABORT_ERR' || (error as NodeJS.ErrnoException & { signal?: unknown }).signal) {
-            reject(new Error('log_query 已取消'))
+          const err = error as NodeJS.ErrnoException & { killed?: boolean; signal?: unknown }
+          // 真正的外部取消（exec.signal abort）——按 AbortError 身份抛出，供上层区分取消与失败
+          if (code === 'ABORT_ERR' || err.name === 'AbortError') {
+            reject(new DOMException('log_query 已取消', 'AbortError'))
+            return
+          }
+          // 超时 kill：Node 报 killed=true + signal=SIGTERM，与取消区分开
+          if (err.killed === true) {
+            reject(new Error(`log_query 超时（超过 ${opts.timeout}ms）`))
             return
           }
           reject(new Error(`log_query 无法启动 ${file}（${code ?? '未知'}）：${error.message}。请确认 Python 3.9+ 已安装并在 PATH 中。`))
