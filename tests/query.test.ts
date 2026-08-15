@@ -76,6 +76,17 @@ describe('runLogQuery (real vendored Python)', () => {
     expect(r.filter.stats).toMatchObject({ errors: 0, others: 0 })
   })
 
+  it('handles concurrent queries without mixing exit codes', async () => {
+    const dated = path.resolve(__dirname, 'fixtures', 'dated.log')
+    // 并发：一个 0 命中（exit 2）+ 一个正常命中（exit 0），都必须正确返回
+    const [empty, hit] = await Promise.all([
+      runLogQuery({ time_text: '2026-01-01', files: [dated] }, cfg, new AbortController().signal),
+      runLogQuery({ time_text: '2026-07-03', files: [fixture], max_lines: 10 }, cfg, new AbortController().signal),
+    ])
+    expect(empty.filter.total_matched).toBe(0)
+    expect(hit.filter.total_matched).toBe(25)
+  })
+
   it('scans a directory recursively with a glob pattern', async () => {
     const r = await runLogQuery(
       { time_text: '2026-07-03', dir: path.dirname(fixture), pattern: 'demo.log', max_lines: 10 },
