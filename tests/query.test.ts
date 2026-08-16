@@ -104,6 +104,26 @@ describe('runLogQuery (real vendored Python)', () => {
     ).rejects.toMatchObject({ name: 'AbortError' })
   })
 
+  it('clamps an oversized max_lines instead of failing', async () => {
+    // 999999 会被 clamp 到 5000：不炸、正常返回（demo.log 只有 25 行）
+    const r = await runLogQuery(
+      { time_text: '2026-07-03', files: [fixture], max_lines: 999_999 },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.filter.total_matched).toBe(25)
+    expect(r.filter.lines.length).toBe(25)
+  })
+
+  it('honors an explicit timezone', async () => {
+    const r = await runLogQuery(
+      { time_text: '2026-07-03', files: [fixture], timezone: 'Asia/Shanghai', max_lines: 5 },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.filter.total_matched).toBe(25)
+  })
+
   it('scans a directory recursively with a glob pattern', async () => {
     const r = await runLogQuery(
       { time_text: '2026-07-03', dir: path.dirname(fixture), pattern: 'demo.log', max_lines: 10 },

@@ -62,6 +62,13 @@ export interface LogQueryResult {
 const MAX_LINES_CAP = 5_000
 
 /**
+ * 子进程 stdout 缓冲上限：与 MAX_LINES_CAP 对齐。
+ * 5000 行 × 常见长日志行（数 KB）可达几十 MB；16MB 会在合法参数下触发
+ * maxBuffer exceeded，故取 64MB 留足余量。
+ */
+const MAX_STDOUT_BUFFER = 64 * 1024 * 1024
+
+/**
  * 解析 Python 可执行命令候选：显式配置的 pythonBin > `python` > Windows `py -3`。
  * 统一追加 `-B`（不写 __pycache__/.pyc），保证 vendored 目录运行时零 Python 缓存产物。
  * py launcher 需要把 `-3` 作为独立参数传给 py，不能拼进命令串，所以用 [命令, 首参] 元组。
@@ -130,7 +137,7 @@ async function runWithFallback(
       return await execFileAsync(command, [...prefix, ...argv], {
         signal,
         timeout: cfg.timeoutMs,
-        maxBuffer: 16 * 1024 * 1024,
+        maxBuffer: MAX_STDOUT_BUFFER,
         windowsHide: true,
       })
     } catch (err) {

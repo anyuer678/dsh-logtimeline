@@ -51,7 +51,7 @@ Once installed, the agent can call the `log_query` tool directly:
 | `since` | string | RFC3339 absolute-time fallback when `time_text` fails to parse |
 | `timezone` | string | IANA timezone name, e.g. `Asia/Shanghai` |
 
-The tool runs in **offline mode** by default: it filters precisely (its unique value), and leaves root-cause reasoning to the agent itself.
+The tool runs in **offline mode** by default: it filters precisely (its unique value), and leaves root-cause reasoning to the agent itself. Oversized results are handled by the harness's own spill mechanism (`spill-policy`, 50KB inline budget).
 
 ## Architecture
 
