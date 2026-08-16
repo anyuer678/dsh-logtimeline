@@ -21,6 +21,7 @@ function stripControl(s: string): string {
 /** Register the `log_query` tool on the given context. */
 export function registerTool(ctx: Context, rawConfig: unknown): void {
   const cfg = resolveConfig(rawConfig)
+  console.log('[dsh-logtimeline] registering tool: log_query')
   ctx.tools.register(defineTool({
     name: 'log_query',
     description: '按中文自然语言时间描述（如「昨天下午」「3小时前」「凌晨12点」「上周三 14:00-15:00」）过滤本地日志文件，返回匹配行、时间范围与级别统计。适合排查「某个时间点发生了什么」类问题。',
