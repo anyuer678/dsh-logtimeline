@@ -1,5 +1,8 @@
-LogTimeline AI —— 日志时间戳模糊查询器
+dsh-logtimeline — 用中文自然语言时间描述查询本地日志（LogTimeline for DeepSeek Harness）
 Copyright (C) 2026 anyuer678
+
+Derived from LogTimeline (https://github.com/anyuer678/logtimeline), also GPL-3.0.
+本插件是 LogTimeline 的衍生作品，按 GNU GPL v3 发布；vendored Python 源码见 python/ 目录。
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
