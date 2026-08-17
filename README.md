@@ -119,7 +119,11 @@ python scripts/run-upstream-tests.py   # upstream LogTimeline pytest suite again
 
 ## Disclaimer
 
-This is a community plugin for the DeepSeek Harness ecosystem and is **not affiliated with DeepSeek**. It is provided "as is", without warranty of any kind. Log analysis results are for reference only — verify against the original log files before acting on them.
+This is a community plugin for the DeepSeek Harness ecosystem and is **not affiliated with DeepSeek**. It is provided for learning and demonstration purposes and does not constitute any form of commercial service or technical commitment. The software is provided "as is", without warranty of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, and non-infringement.
+
+By using this project you acknowledge that you assume all risk. If you find defects or issues, please report them via GitHub Issues; however, the author shall not be liable for any direct or indirect losses arising from the use of this software (including but not limited to data loss, business interruption, or third-party claims).
+
+This project has not been validated or hardened to production-grade standards (architecture, security baseline, fault tolerance, or performance) and is **not suitable for production or critical environments**. Deploying it to production systems, exposing it as a service, or integrating it into real business workflows is your own decision, and any resulting adverse outcomes (service interruption, data corruption or leakage, business loss, compliance risks, third-party disputes) are your sole responsibility. Log analysis results are for reference only — always verify against the original log files before acting on them. If you need production-grade usage, harden it yourself (security audit, load testing, code review) and bear the associated risk.
 
 ## License
 
