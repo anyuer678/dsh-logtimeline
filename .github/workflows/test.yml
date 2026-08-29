@@ -16,15 +16,4 @@ jobs:
           node-version-file: .nvmrc
       - run: npm ci
       - run: npm run build
-      - name: Run tests with verbose output
-        run: npx vitest run --reporter=verbose 2>&1 | tee test-output.txt
-        continue-on-error: true
-      - name: Upload test output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-output
-          path: test-output.txt
-      - name: Fail if tests failed
-        if: steps.test.outcome == 'failure'
-        run: exit 1
+      - run: npm test
