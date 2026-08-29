@@ -54,7 +54,7 @@ describe('runLogQuery (real vendored Python)', () => {
 
   it('falls back to --since when the time text is unparsable', async () => {
     const r = await runLogQuery(
-      { time_text: '完全无法理解的描述', files: [fixture], since: '2026-07-03T09:00:00+08:00' },
+      { time_text: '完全无法理解的描述', files: [fixture], since: '2026-07-03T09:00:00' },
       cfg,
       new AbortController().signal,
     )
