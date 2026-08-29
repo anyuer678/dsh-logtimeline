@@ -1,4 +1,4 @@
-﻿2026-07-03 08:00:00 INFO Daily backup started
+2026-07-03 08:00:00 INFO Daily backup started
 2026-07-03 08:30:00 WARN Backup size exceeds threshold
 2026-07-03 09:00:00 INFO Backup completed successfully
 2026-07-03 09:30:00 DEBUG Cleanup of old backups

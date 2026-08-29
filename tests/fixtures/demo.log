@@ -1,4 +1,4 @@
-﻿2026-07-03 09:15:00 ERROR Database connection failed
+2026-07-03 09:15:00 ERROR Database connection failed
 2026-07-03 09:15:01 ERROR Connection pool exhausted
 2026-07-03 09:15:02 ERROR Migration failed: table exists
 2026-07-03 09:15:03 ERROR Request timeout after 30s
