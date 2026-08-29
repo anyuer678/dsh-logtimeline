@@ -1,5 +1,7 @@
-node_modules/
+﻿node_modules/
 *.tgz
 *.log
 __pycache__/
 *.tsbuildinfo
+!tests/fixtures/*.log
+
