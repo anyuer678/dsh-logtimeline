@@ -1,4 +1,4 @@
-name: Test
+﻿name: Test
 
 on:
   push:
@@ -14,7 +14,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
+      - name: Debug environment
+        run: |
+          node --version
+          python3 --version
+          which python3
       - run: npm ci
       - run: npm run build
       - run: npm test
