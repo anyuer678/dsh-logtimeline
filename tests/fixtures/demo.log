@@ -1,0 +1,25 @@
+﻿2026-07-03 09:15:00 ERROR Database connection failed
+2026-07-03 09:15:01 ERROR Connection pool exhausted
+2026-07-03 09:15:02 ERROR Migration failed: table exists
+2026-07-03 09:15:03 ERROR Request timeout after 30s
+2026-07-03 09:15:04 ERROR Out of memory: heap limit
+2026-07-03 09:15:05 ERROR SSL certificate expires soon
+2026-07-03 09:15:06 ERROR Rate limit exceeded for IP
+2026-07-03 09:15:07 ERROR Disk space critical
+2026-07-03 09:15:08 ERROR Permission denied on config
+2026-07-03 09:15:09 ERROR Timeout waiting for lock
+2026-07-03 09:15:10 ERROR Unexpected EOF in stream
+2026-07-03 09:15:11 ERROR Null pointer in module init
+2026-07-03 09:15:12 ERROR Stack overflow detected
+2026-07-03 09:15:13 WARN Disk usage at 85 percent
+2026-07-03 09:15:14 INFO Starting application
+2026-07-03 09:15:15 DEBUG Loading config
+2026-07-03 09:15:16 INFO Connection established
+2026-07-03 09:15:17 DEBUG Executing migration
+2026-07-03 09:15:18 INFO Skipping migration
+2026-07-03 09:15:19 DEBUG Health check passed
+2026-07-03 09:15:20 INFO Listening on port 8080
+2026-07-03 09:15:21 DEBUG Cache hit for key user1234
+2026-07-03 09:15:22 INFO Request processed
+2026-07-03 09:15:23 DEBUG WebSocket opened
+2026-07-03 09:15:24 INFO Backup started
