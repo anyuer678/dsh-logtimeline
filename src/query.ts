@@ -77,6 +77,7 @@ function pythonCandidates(cfg: ResolvedConfig): Array<[string, string[]]> {
   if (cfg.pythonBin !== 'python') return [[cfg.pythonBin, ['-B']]]
   return [
     ['python', ['-B']],
+    ['python3', ['-B']],
     ['py', ['-3', '-B']],
   ]
 }
