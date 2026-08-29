@@ -7,7 +7,11 @@ import sys
 from pathlib import Path
 
 VENDORED = Path(__file__).resolve().parent
-UPSTREAM_TESTS = VENDORED.parent.parent / "logtimeline" / "tests"
+# 上游测试目录可通过环境变量 UPSTREAM_TESTS 指定（指向 vendored 来源仓库的 tests/）
+UPSTREAM_TESTS = Path(
+    os.environ.get("UPSTREAM_TESTS")
+    or (VENDORED.parent.parent / "logtimeline" / "tests")
+)
 
 sys.path.insert(0, str(VENDORED))
 
