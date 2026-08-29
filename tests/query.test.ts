@@ -58,7 +58,7 @@ describe('runLogQuery (real vendored Python)', () => {
       cfg,
       new AbortController().signal,
     )
-    // naive 墙钟时间：时区后缀被归一化，不抛 offset-naive vs aware 错误
+    // since 用 naive 墙钟值：断言不依赖 runner 本地时区（CI 为 UTC）
     expect(r.time_range.start).toBe('2026-07-03 09:00:00')
   })
 
