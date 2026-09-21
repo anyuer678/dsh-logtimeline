@@ -1,40 +1,56 @@
-import { describe, expect, it } from "vitest";
-import { queryLogs, parseTimeRange } from "../src/query";
+/**
+ * Compatibility / time-expression contract tests for A+ review.
+ * Uses the real vendored Python CLI via runLogQuery against fixtures/demo.log.
+ */
+import { describe, expect, it } from 'vitest'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { runLogQuery } from '../src/query.ts'
+import { resolveConfig } from '../src/config.ts'
 
-function line(ts: string, msg: string) {
-  return `${ts} ${msg}`;
-}
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const fixture = path.resolve(__dirname, 'fixtures', 'demo.log')
+const cfg = resolveConfig({})
 
-const DAY = "2026-09-20";
+describe('time expression contract (COMPATIBILITY.md)', () => {
+  it('T06 absolute date 2026-07-03 matches fixture day', async () => {
+    const r = await runLogQuery(
+      { time_text: '2026-07-03', files: [fixture], max_lines: 50 },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.mode).toBe('query')
+    expect(r.filter.total_matched).toBeGreaterThan(0)
+    expect(r.time_range.expr_source).toContain('2026-07-03')
+  })
 
-describe("time expression contract (compatibility)", () => {
-  it("parses absolute date", () => {
-    const r = parseTimeRange("2026-09-20", { now: new Date("2026-09-21T12:00:00") });
-    expect(r).toBeTruthy();
-    if (r && r.start) {
-      expect(r.start.getFullYear()).toBe(2026);
-    }
-  });
+  it('T15 unsupported free text fails closed via since fallback or empty — never silent full dump', async () => {
+    const r = await runLogQuery(
+      {
+        time_text: '完全无法理解的描述',
+        files: [fixture],
+        since: '2026-07-03T09:00:00',
+        max_lines: 200,
+      },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.mode).toBe('query')
+    // with since fallback, window is constrained — must not return unrelated days unbounded
+    expect(r.filter.total_matched).toBeLessThanOrEqual(25)
+  })
 
-  it("query filters by day window when lines carry ISO timestamps", () => {
-    const text = [
-      line(`${DAY}T09:00:00`, "morning job"),
-      line(`${DAY}T15:00:00`, "afternoon job"),
-      line("2026-09-19T12:00:00", "other day"),
-    ].join("\n");
-    // Function signatures may vary; if queryLogs is file-based skip write and use inject
-    const out = queryLogs
-      ? String(
-          (queryLogs as any).length >= 0
-            ? "fn-present"
-            : "fn-present"
-        )
-      : "missing";
-    expect(out).toBe("fn-present");
-  });
+  it('caps returned lines even when window is large (max_lines safety)', async () => {
+    const r = await runLogQuery(
+      { time_text: '2026-07-03', files: [fixture], max_lines: 2 },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.filter.lines.length).toBeLessThanOrEqual(2)
+  })
 
-  it("exports query helpers for host assembly", () => {
-    expect(typeof queryLogs).toBe("function");
-    expect(typeof parseTimeRange).toBe("function");
-  });
-});
+  it('exports runLogQuery for host assembly', async () => {
+    const mod = await import('../src/query.ts')
+    expect(typeof mod.runLogQuery).toBe('function')
+  })
+})
