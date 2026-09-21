@@ -128,3 +128,8 @@ python scripts/run-upstream-tests.py   # 用 vendored 代码跑上游 124 例 py
 ## License
 
 [GPL-3.0](LICENSE) — 衍生自 [LogTimeline](https://github.com/anyuer678/logtimeline)（GPL-3.0）。Copyright (C) 2026 anyuer678。
+
+## Compatibility
+
+- Host/OS/time matrix: [COMPATIBILITY.md](./COMPATIBILITY.md)
+- Time expression table: [docs/time-expressions.md](./docs/time-expressions.md)

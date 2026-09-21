@@ -128,3 +128,8 @@ This project has not been validated or hardened to production-grade standards (a
 ## License
 
 [GPL-3.0](LICENSE) — derived from [LogTimeline](https://github.com/anyuer678/logtimeline) (GPL-3.0). Copyright (C) 2026 anyuer678.
+
+## Compatibility
+
+- Host/OS/time matrix: [COMPATIBILITY.md](./COMPATIBILITY.md)
+- Time expression table: [docs/time-expressions.md](./docs/time-expressions.md)

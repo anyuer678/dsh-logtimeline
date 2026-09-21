@@ -25,3 +25,14 @@ All notable changes to this project will be documented in this file.
 - f11e09a feat: log tool registration for observability
 - b3ecb6b fix: align with harness 0.1.0-rc.6 line; drop invariant companion; python -B (no pycache); py launcher fallback; correct install commands
 
+
+
+## [Unreleased]
+
+### Added
+- `COMPATIBILITY.md` host/OS/time-expression matrix
+- `docs/time-expressions.md` reviewer-facing expression table
+- Additional vitest contract checks for query/parse exports
+
+### Notes
+- Residual A+ gaps: upstream suite badge automation, host RC pin refresh cadence
