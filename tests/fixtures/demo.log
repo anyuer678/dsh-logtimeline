@@ -23,3 +23,18 @@
 2026-07-03 09:15:22 INFO Request processed
 2026-07-03 09:15:23 DEBUG WebSocket opened
 2026-07-03 09:15:24 INFO Backup started
+2026-07-02 09:05:00 INFO Cache warmup started
+2026-07-02 09:30:00 WARN Slow query on user index
+2026-07-02 10:15:00 ERROR Replica lag above threshold
+2026-07-02 11:00:00 INFO Job queue drained
+2026-07-02 14:20:00 ERROR Upstream API 502
+2026-07-02 16:45:00 WARN Retry budget nearly exhausted
+2026-07-02 17:50:00 INFO Afternoon health window clean
+2026-07-01 08:10:00 INFO Cold start complete
+2026-07-01 09:00:00 ERROR Config reload failed
+2026-07-01 12:00:00 WARN Memory watermark 78 percent
+2026-07-01 15:30:00 INFO Schema migration applied
+2026-07-01 18:00:00 DEBUG Evening GC cycle
+2026-06-25 10:00:00 INFO Weekly report generated
+2026-06-25 13:00:00 WARN Certificate expiry within 14 days
+2026-06-25 16:00:00 ERROR Nightly batch failed
