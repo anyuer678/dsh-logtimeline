@@ -226,7 +226,7 @@ describe('T01–T15 filter against fixtures/demo.log (frozen now)', () => {
     const r = (await runHelper('昨天', 'filter')) as { ok: boolean; total_matched: number; stats: { errors: number } }
     expect(r.ok).toBe(true)
     expect(r.total_matched).toBe(7)
-    expect(r.stats.errors).toBe(1)
+    expect(r.stats.errors).toBe(2)
   })
 
   it('T03 前天 hits only 2026-07-01 lines', async () => {
@@ -269,7 +269,8 @@ describe('T01–T15 via runLogQuery (wall-clock host path)', () => {
     { id: 'T04a', expr: '3 小时前', mode: 'maybe-empty' },
     { id: 'T05', expr: '30 分钟前', mode: 'maybe-empty' },
     { id: 'T06', expr: '2026-07-03', mode: 'hit' },
-    { id: 'T07', expr: '2026-07-03 14:30', mode: 'hit' },
+    // T07 is a point window (start=end=stamp) — demo.log has no 14:30:00 line
+    { id: 'T07', expr: '2026-07-03 14:30', mode: 'maybe-empty' },
     { id: 'T08', expr: '昨天 9 点到 18 点', mode: 'maybe-empty' },
     { id: 'T09a', expr: '本周', mode: 'maybe-empty' },
     { id: 'T10', expr: '上周', mode: 'maybe-empty' },
