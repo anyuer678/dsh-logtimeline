@@ -6,3 +6,6 @@ __pycache__/
 *.tsbuildinfo
 !tests/fixtures/*.log
 
+
+coverage/
+
