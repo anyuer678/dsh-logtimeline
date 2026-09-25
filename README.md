@@ -1,6 +1,8 @@
 <p align="center">
   <strong>🐳 dsh-logtimeline</strong>
 </p>
+
+[![Tests](https://github.com/anyuer678/dsh-logtimeline/actions/workflows/test.yml/badge.svg)](https://github.com/anyuer678/dsh-logtimeline/actions/workflows/test.yml)
 <p align="center">
   <em>Query local log files with Chinese natural-language time expressions — LogTimeline for DeepSeek Harness.</em>
 </p>
