@@ -129,7 +129,20 @@ This project has not been validated or hardened to production-grade standards (a
 
 ## Ecosystem
 
-dsh-logtimeline is a standard MCP server and can be registered into [lumen](https://github.com/anyuer678/lumen) (a 24/7 agent runtime with built-in MCP registration). Portfolio map: [https://anyuer678.github.io/yuer.dev/map](https://anyuer678.github.io/yuer.dev/map)
+dsh-logtimeline ships a thin MCP stdio wrapper — `python/mcp_server.py` (requires `pip install mcp`), exposing two tools: `log_query` (Chinese natural-language time + log files → structured JSON) and `parse_time` (time-range resolution only). **Verified end-to-end on 2026-10-10**: registered into [lumen](https://github.com/anyuer678/lumen) (24/7 agent runtime with built-in MCP registration) via `POST /v1/mcp/servers` → `POST /v1/mcp/servers/dsh-logtimeline/test` → `{"status":"ok"}`; a real `log_query("10分钟前")` call over MCP returned the resolved time range, matched lines and level stats.
+
+```yaml
+# lumen conf/config.yaml
+mcp:
+    enabled: true
+    servers:
+        - name: dsh-logtimeline
+          command: python
+          args: ["/path/to/dsh-logtimeline/python/mcp_server.py"]
+          transport: stdio
+```
+
+Portfolio map: [https://anyuer678.github.io/yuer.dev/map](https://anyuer678.github.io/yuer.dev/map)
 
 ## License
 
