@@ -127,6 +127,10 @@ By using this project you acknowledge that you assume all risk. If you find defe
 
 This project has not been validated or hardened to production-grade standards (architecture, security baseline, fault tolerance, or performance) and is **not suitable for production or critical environments**. Deploying it to production systems, exposing it as a service, or integrating it into real business workflows is your own decision, and any resulting adverse outcomes (service interruption, data corruption or leakage, business loss, compliance risks, third-party disputes) are your sole responsibility. Log analysis results are for reference only — always verify against the original log files before acting on them. If you need production-grade usage, harden it yourself (security audit, load testing, code review) and bear the associated risk.
 
+## Ecosystem
+
+dsh-logtimeline is a standard MCP server and can be registered into [lumen](https://github.com/anyuer678/lumen) (a 24/7 agent runtime with built-in MCP registration). Portfolio map: [https://anyuer678.github.io/yuer.dev/map](https://anyuer678.github.io/yuer.dev/map)
+
 ## License
 
 [GPL-3.0](LICENSE) — derived from [LogTimeline](https://github.com/anyuer678/logtimeline) (GPL-3.0). Copyright (C) 2026 anyuer678.
