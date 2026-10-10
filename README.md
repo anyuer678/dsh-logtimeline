@@ -15,7 +15,7 @@
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue.svg"></a>
   <a href="https://github.com/anyuer678/logtimeline"><img alt="Upstream" src="https://img.shields.io/badge/powered%20by-LogTimeline-42b883"></a>
   <a href="https://awesome-dsh-plugin.com"><img alt="Awesome DSH Plugin" src="https://awesome-dsh-plugin.com/badge.svg"></a>
-  <img alt="Tests" src="https://img.shields.io/badge/tests-13%20passed-brightgreen">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-57%20passed-brightgreen">
   <img alt="Offline" src="https://img.shields.io/badge/offline-first-4b6fff">
 </p>
 
