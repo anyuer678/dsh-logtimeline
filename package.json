@@ -51,7 +51,7 @@
     "@deepseek-ai/dsh-system-prompt": "^0.2.0-rc.2",
     "@deepseek-ai/dsh-timeout": "^0.1.0-rc.6",
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6",
-    "@deepseek-ai/dsh-user-approval": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-user-approval": "^0.2.0-rc.2",
     "@types/node": "^24.0.0",
     "@vitest/coverage-v8": "^4.1.8",
     "typescript": "^5.9.0",
