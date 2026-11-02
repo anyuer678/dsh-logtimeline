@@ -52,7 +52,7 @@
     "@deepseek-ai/dsh-timeout": "^0.2.0-rc.2",
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6",
     "@deepseek-ai/dsh-user-approval": "^0.2.0-rc.2",
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.0.3",
     "typescript": "^5.9.0",
     "vite": "^8.3.5",
