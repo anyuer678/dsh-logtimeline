@@ -116,6 +116,11 @@ def _match_relative(s: str, now: datetime) -> TimeRange | None:
     today = now.date()
     if s == "刚刚":
         return TimeRange(now - timedelta(minutes=1), now, s, 0.7)
+    m = re.fullmatch(r"半\s*(分钟|小时|天|周)\s*前", s)
+    if m:
+        # "半小时前"等：取对应单位时长的一半
+        sec = RELATIVE_UNITS[m.group(1)] // 2
+        return TimeRange(now - timedelta(seconds=sec), now, s, 0.7)
     m = re.fullmatch(r"(\d{1,4}|[" + _CN + r"]{1,3})\s*(分钟|小时|天|周)\s*前", s)
     if m:
         sec = _num(m.group(1)) * RELATIVE_UNITS[m.group(2)]
@@ -134,6 +139,20 @@ def _match_relative(s: str, now: datetime) -> TimeRange | None:
         monday = today - timedelta(days=today.weekday())
         start = datetime(monday.year, monday.month, monday.day)
         return TimeRange(start, start + timedelta(days=7), s, 0.7)
+    if s in ("上个月", "上月"):
+        first_this = today.replace(day=1)
+        prev_last = first_this - timedelta(days=1)
+        return TimeRange(datetime(prev_last.year, prev_last.month, 1),
+                         datetime(first_this.year, first_this.month, first_this.day), s, 0.7)
+    if s in ("本月", "这个月", "这月"):
+        first_this = today.replace(day=1)
+        nxt = (first_this + timedelta(days=32)).replace(day=1)
+        return TimeRange(datetime(first_this.year, first_this.month, 1),
+                         datetime(nxt.year, nxt.month, nxt.day), s, 0.7)
+    if s == "去年":
+        return TimeRange(datetime(today.year - 1, 1, 1), datetime(today.year, 1, 1), s, 0.7)
+    if s == "今年":
+        return TimeRange(datetime(today.year, 1, 1), datetime(today.year + 1, 1, 1), s, 0.7)
     m = re.fullmatch(r"(?:上|本|这|前)?(?:周|星期)([一二三四五六日天1-7])", s)
     if m:
         monday = today - timedelta(days=today.weekday())
@@ -155,6 +174,10 @@ def _match_range(s: str, now: datetime) -> TimeRange | None:
     if s == "今晚":
         start = datetime(today.year, today.month, today.day, 18, 0)
         return TimeRange(start, start + timedelta(hours=5), s, 0.7)
+    if s == "明晚":
+        d = today + timedelta(days=1)
+        start = datetime(d.year, d.month, d.day, 18, 0)
+        return TimeRange(start, start + timedelta(hours=5), s, 0.7)
     base, rest, has_day, night = _extract_day(s, now)
     if rest in FUZZY_WINDOWS:
         a, b = FUZZY_WINDOWS[rest]
@@ -171,7 +194,12 @@ def _match_range(s: str, now: datetime) -> TimeRange | None:
         h1, mi1 = _point(m, "1")
         h2, mi2 = _point(m, "2")
         if win:
-            h1, h2 = _adjust_hour(win, h1), _adjust_hour(win, h2)
+            if h2 < h1:
+                # 跨午夜区间（如"晚上11点到1点"）：终点是次日凌晨的小时，
+                # 不按窗口词换算（否则 1 点被换算成 13 点），靠 end<=start 翻日
+                h1 = _adjust_hour(win, h1)
+            else:
+                h1, h2 = _adjust_hour(win, h1), _adjust_hour(win, h2)
         elif h1 >= 12 and h2 < 12 and h2 + 12 > h1:
             h2 += 12
         start = datetime(base.year, base.month, base.day, h1, mi1)
@@ -213,6 +241,8 @@ def _extract_day(s: str, now: datetime):
         return today, s[2:].strip(), True, True
     if s.startswith("昨晚"):
         return today - timedelta(days=1), s[2:].strip(), True, True
+    if s.startswith("明晚"):
+        return today + timedelta(days=1), s[2:].strip(), True, True
     for word, delta in (("大前天", -3), ("前天", -2), ("昨天", -1), ("今天", 0), ("明天", 1)):
         if s.startswith(word):
             return today + timedelta(days=delta), s[len(word):].strip(), True, False
