@@ -178,6 +178,8 @@ def _level_key(raw: str) -> str:
 
 
 _VALID_LEVEL_BUCKETS = {"errors", "warns", "infos", "debugs", "others"}
+# 公开只读别名：上层 CLI（lq.py 等）做前置校验用
+VALID_LEVEL_BUCKETS = frozenset(_VALID_LEVEL_BUCKETS)
 
 
 def _make_matcher(keyword: Optional[str], levels: Optional[Sequence[str]]):
