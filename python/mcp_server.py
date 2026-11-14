@@ -55,6 +55,8 @@ def log_query(
     pattern: str = "*.log",
     max_lines: int = 200,
     timezone: str | None = None,
+    keyword: str | None = None,
+    levels: list[str] | None = None,
 ) -> dict:
     extra = [time_text, "--max-lines", str(max(int(max_lines), 0))]
     if dir:
@@ -66,6 +68,10 @@ def log_query(
         extra += ["--pattern", str(pattern)]
     if timezone:
         extra += ["--timezone", str(timezone)]
+    if keyword:
+        extra += ["--keyword", str(keyword)]
+    if levels:
+        extra += ["--levels", ",".join(str(x) for x in levels)]
     return _run_lq(extra)
 
 

@@ -49,6 +49,9 @@ def build_parser():
     p.add_argument("--service", default=None, help="--journalctl 服务名")
     p.add_argument("--journalctl", action="store_true", help="从 journalctl 取日志（仅 Linux/systemd）")
     p.add_argument("--max-lines", type=int, default=500, help="最多返回行数（>=0，0 表示只统计）")
+    p.add_argument("--keyword", default=None, help="子串过滤（大小写不敏感，命中原始行才计入）")
+    p.add_argument("--levels", default=None,
+                   help="级别分桶过滤，逗号分隔：errors,warns,infos,debugs,others")
     p.add_argument("--encoding", default="auto",
                    help="日志文件编码：auto（UTF-8 优先，失败回退 GBK）/ utf-8 / gbk 等")
     p.add_argument("--since", default=None, help="解析失败的绝对时间兜底（RFC3339）")
@@ -175,12 +178,20 @@ def _filter_journal(args, tr):
         _error("无法执行 journalctl：%s" % exc)
         return None
     with proc.stdout:
-        res = filter_stream(proc.stdout, tr, max_lines=args.max_lines, source="journalctl")
+        res = filter_stream(proc.stdout, tr, max_lines=args.max_lines, source="journalctl",
+                        keyword=args.keyword, levels=_levels_of(args))
     proc.wait()
     if proc.returncode != 0:
         _error("journalctl 退出码 %d（服务不存在或无权限？该功能仅 Linux/systemd 可用）" % proc.returncode)
         return None
     return res
+
+
+def _levels_of(args) -> list[str] | None:
+    """--levels 逗号串 → 分桶名列表；未传返回 None。"""
+    if not args.levels:
+        return None
+    return [s.strip() for s in args.levels.split(",") if s.strip()]
 
 
 def _do_filter(args, tr):
@@ -189,7 +200,8 @@ def _do_filter(args, tr):
     paths, missing = _collect_paths(args)
     if missing: _error("文件或目录不存在：" + "，".join(missing)); return None
     if not paths: _error("未找到任何日志文件（--dir 下 --pattern 无匹配）"); return None
-    return filter_logs(paths, tr, max_lines=args.max_lines, encoding=args.encoding)
+    return filter_logs(paths, tr, max_lines=args.max_lines, encoding=args.encoding,
+                       keyword=args.keyword, levels=_levels_of(args))
 
 
 def _do_analysis(args, tr, sample, stats, counts):
@@ -235,6 +247,8 @@ def _emit_json(tr, res, analysis, args=None):
                  for ll in res.lines]
         payload["filter"] = {"total_matched": res.total_matched, "truncated": res.truncated,
                              "time_span_found": res.time_span_found,
+                             "keyword": args.keyword,
+                             "levels": _levels_of(args),
                              "file_stats": res.file_stats, "file_errors": res.file_errors,
                              "stats": res.stats, "lines": lines}
         payload["analysis"] = None if analysis is None else {
@@ -283,6 +297,12 @@ def main(argv=None):
     if args.max_lines < 0:
         _error("--max-lines 必须 >= 0")
         return 1
+    if args.levels:
+        from log_filter import VALID_LEVEL_BUCKETS
+        unknown = {x.strip() for x in args.levels.split(",") if x.strip()} - VALID_LEVEL_BUCKETS
+        if unknown:
+            _error("未知的日志级别分桶：%s（可选：%s）" % (",".join(sorted(unknown)), "/".join(sorted(VALID_LEVEL_BUCKETS))))
+            return 1
     tr = _parse_time(args)
     if tr is None:
         return 1
