@@ -43,9 +43,9 @@ const PARSER_CASES: ParseCase[] = [
   { id: 'T02b', expr: '昨晚', expect: 'ok', start: '2026-07-02 18:00:00', end: '2026-07-03 00:00:00', minConf: 0.7 },
   // T03 Day before
   { id: 'T03', expr: '前天', expect: 'ok', start: '2026-07-01 00:00:00', end: '2026-07-02 00:00:00', minConf: 0.7 },
-  // T04 Relative hours — numeric supported; 半小时前 is NOT
+  // T04 Relative hours — numeric + 半 supported (2026-11-14 enhancement)
   { id: 'T04a', expr: '3 小时前', expect: 'ok', start: '2026-07-03 17:00:00', end: '2026-07-03 20:00:00', minConf: 0.7 },
-  { id: 'T04b', expr: '半小时前', expect: 'unsupported', note: '半 is not accepted by the relative-hour numeral regex' },
+  { id: 'T04b', expr: '半小时前', expect: 'ok', start: '2026-07-03 19:30:00', end: '2026-07-03 20:00:00', minConf: 0.7 },
   // T05 Relative minutes
   { id: 'T05', expr: '30 分钟前', expect: 'ok', start: '2026-07-03 19:30:00', end: '2026-07-03 20:00:00', minConf: 0.7 },
   // T06 Absolute date
@@ -59,20 +59,25 @@ const PARSER_CASES: ParseCase[] = [
   { id: 'T09b', expr: '这周', expect: 'ok', start: '2026-06-29 00:00:00', end: '2026-07-06 00:00:00', minConf: 0.7 },
   // T10 Last week
   { id: 'T10', expr: '上周', expect: 'ok', start: '2026-06-22 00:00:00', end: '2026-06-29 00:00:00', minConf: 0.7 },
-  // T11 This month — NOT implemented
-  { id: 'T11a', expr: '本月', expect: 'unsupported', note: 'no month-window matcher in time_parser.py' },
-  { id: 'T11b', expr: '这个月', expect: 'unsupported', note: 'no month-window matcher in time_parser.py' },
-  // T12 Last month — NOT implemented
-  { id: 'T12', expr: '上个月', expect: 'unsupported', note: 'no month-window matcher in time_parser.py' },
-  // T13 Year windows — NOT implemented
-  { id: 'T13a', expr: '今年', expect: 'unsupported', note: 'no year-window matcher in time_parser.py' },
-  { id: 'T13b', expr: '去年', expect: 'unsupported', note: 'no year-window matcher in time_parser.py' },
+  // T11 This month (supported 2026-11-14)
+  { id: 'T11a', expr: '本月', expect: 'ok', start: '2026-07-01 00:00:00', end: '2026-08-01 00:00:00', minConf: 0.7 },
+  { id: 'T11b', expr: '这个月', expect: 'ok', start: '2026-07-01 00:00:00', end: '2026-08-01 00:00:00', minConf: 0.7 },
+  // T12 Last month (supported 2026-11-14)
+  { id: 'T12', expr: '上个月', expect: 'ok', start: '2026-06-01 00:00:00', end: '2026-07-01 00:00:00', minConf: 0.7 },
+  // T13 Year windows (supported 2026-11-14)
+  { id: 'T13a', expr: '今年', expect: 'ok', start: '2026-01-01 00:00:00', end: '2027-01-01 00:00:00', minConf: 0.7 },
+  { id: 'T13b', expr: '去年', expect: 'ok', start: '2025-01-01 00:00:00', end: '2026-01-01 00:00:00', minConf: 0.7 },
   // T14 Part-of-day (standalone fuzzy)
   { id: 'T14a', expr: '上午', expect: 'ok', start: '2026-07-03 08:00:00', end: '2026-07-03 12:00:00', minConf: 0.4 },
   { id: 'T14b', expr: '下午', expect: 'ok', start: '2026-07-03 13:00:00', end: '2026-07-03 18:00:00', minConf: 0.4 },
   { id: 'T14c', expr: '晚上', expect: 'ok', start: '2026-07-03 18:00:00', end: '2026-07-03 23:00:00', minConf: 0.4 },
   // T15 Unsupported slang
   { id: 'T15', expr: '上周摸鱼那天', expect: 'unsupported', note: 'free text must fail closed' },
+  // T16 明晚 (supported 2026-11-14)
+  { id: 'T16a', expr: '明晚', expect: 'ok', start: '2026-07-04 18:00:00', end: '2026-07-04 23:00:00', minConf: 0.7 },
+  { id: 'T16b', expr: '明晚8点', expect: 'ok', start: '2026-07-04 20:00:00', end: '2026-07-04 21:00:00', minConf: 0.7 },
+  // T17 Cross-midnight range with window word (behavior fixed 2026-11-14: end was wrongly shifted to 13:00)
+  { id: 'T17', expr: '晚上11点到1点', expect: 'ok', start: '2026-07-03 23:00:00', end: '2026-07-04 01:00:00', minConf: 1 },
 ]
 
 function pythonCandidates(): Array<[string, string[]]> {
