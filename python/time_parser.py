@@ -125,6 +125,10 @@ def _match_relative(s: str, now: datetime) -> TimeRange | None:
     if m:
         sec = _num(m.group(1)) * RELATIVE_UNITS[m.group(2)]
         return TimeRange(now - timedelta(seconds=sec), now, s, 0.7)
+    if s == "今天":
+        return _whole_day(today, s, 0.7)
+    if s == "明天":
+        return _whole_day(today + timedelta(days=1), s, 0.7)
     if s == "昨天":
         return _whole_day(today - timedelta(days=1), s)
     if s == "前天":

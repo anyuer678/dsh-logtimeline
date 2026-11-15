@@ -7,9 +7,10 @@ parser are the source of truth; this table helps users and reviewers.
 | ID | Class | Example input | Expected behavior | Verified |
 |----|-------|---------------|-------------------|----------|
 | T01 | Today | 今天下午 | Current local day + part-of-day | Yes (`T01a`) |
-| T01b | Bare today | 今天 | Whole day — **unsupported** (no matcher) | Documented skip |
+| T01b | Bare today | 今天 | Whole day | Yes (`T01b`, 2026-11-16) |
 | T02 | Yesterday | 昨天 / 昨晚 | Previous calendar day (昨晚 = 18:00–24:00) | Yes (`T02a/b`) |
 | T03 | Day before | 前天 | -2 days | Yes (`T03`) |
+| T18 | Tomorrow | 明天 | Next calendar day (whole day) | Yes (`T18`, 2026-11-16) |
 | T04 | Relative hours | 3 小时前 | now-3h .. now | Yes (`T04a`) |
 | T04b | 半小时前 | 半小时前 | now-30m .. now | Yes (`T04b`, 2026-11-14) |
 | T05 | Relative minutes | 30 分钟前 | now-30m .. now | Yes (`T05`) |

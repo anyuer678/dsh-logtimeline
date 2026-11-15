@@ -159,3 +159,21 @@ class TestNewExpressions(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestTodayTomorrow(unittest.TestCase):
+    """2026-11-16 增强：裸 今天/明天 全天窗口（对齐 昨天 系列的对称性）。"""
+
+    def test_today_whole_day(self):
+        r = parse_time_range("今天", now=NOW)
+        self.assertEqual((r.start, r.end), (datetime(2026, 11, 11), datetime(2026, 11, 12)))
+        self.assertEqual(r.confidence, 0.7)
+
+    def test_tomorrow_whole_day(self):
+        r = parse_time_range("明天", now=NOW)
+        self.assertEqual((r.start, r.end), (datetime(2026, 11, 12), datetime(2026, 11, 13)))
+        self.assertEqual(r.confidence, 0.7)
+
+    def test_existing_day_prefixes_unaffected(self):
+        # 回归：带 part-of-day 的 今天下午 等不受影响
+        r = parse_time_range("今天下午3点", now=NOW)
+        self.assertEqual(r.start, datetime(2026, 11, 11, 15))

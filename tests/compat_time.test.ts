@@ -37,12 +37,14 @@ type ParseCase = {
 const PARSER_CASES: ParseCase[] = [
   // T01 Today — 今天下午 supported; bare 今天 is NOT (documented gap)
   { id: 'T01a', expr: '今天下午', expect: 'ok', start: '2026-07-03 13:00:00', end: '2026-07-03 18:00:00', minConf: 0.4 },
-  { id: 'T01b', expr: '今天', expect: 'unsupported', note: 'bare 今天 has no matcher (only day-prefix + window)' },
+  { id: 'T01b', expr: '今天', expect: 'ok', start: '2026-07-03 00:00:00', end: '2026-07-04 00:00:00', minConf: 0.7 },
   // T02 Yesterday
   { id: 'T02a', expr: '昨天', expect: 'ok', start: '2026-07-02 00:00:00', end: '2026-07-03 00:00:00', minConf: 0.7 },
   { id: 'T02b', expr: '昨晚', expect: 'ok', start: '2026-07-02 18:00:00', end: '2026-07-03 00:00:00', minConf: 0.7 },
   // T03 Day before
   { id: 'T03', expr: '前天', expect: 'ok', start: '2026-07-01 00:00:00', end: '2026-07-02 00:00:00', minConf: 0.7 },
+  // T18 Tomorrow (supported 2026-11-16)
+  { id: 'T18', expr: '明天', expect: 'ok', start: '2026-07-04 00:00:00', end: '2026-07-05 00:00:00', minConf: 0.7 },
   // T04 Relative hours — numeric + 半 supported (2026-11-14 enhancement)
   { id: 'T04a', expr: '3 小时前', expect: 'ok', start: '2026-07-03 17:00:00', end: '2026-07-03 20:00:00', minConf: 0.7 },
   { id: 'T04b', expr: '半小时前', expect: 'ok', start: '2026-07-03 19:30:00', end: '2026-07-03 20:00:00', minConf: 0.7 },
