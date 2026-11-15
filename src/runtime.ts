@@ -61,6 +61,13 @@ export function registerTool(ctx: Context, rawConfig: unknown): void {
               total_matched: { type: 'number' },
               truncated: { type: 'boolean' },
               time_span_found: { type: 'boolean' },
+              keyword: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+              levels: {
+                oneOf: [
+                  { type: 'array', items: { type: 'string' } },
+                  { type: 'null' },
+                ],
+              },
               file_stats: { type: 'object', additionalProperties: true },
               file_errors: { type: 'object', additionalProperties: true },
               stats: { type: 'object', additionalProperties: true },
