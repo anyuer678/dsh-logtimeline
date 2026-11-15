@@ -157,3 +157,30 @@ describe('runLogQuery validation', () => {
     ).rejects.toThrow(/不存在/)
   })
 })
+
+describe('log_query keyword/levels 透传（B31 契约审计补）', () => {
+  it('argv 透传 --keyword/--levels 到 vendored lq.py', async () => {
+    // 经 runLogQuery 的公开路径断言：fixture 日志 + keyword 过滤 → total 反映过滤
+    const r = await runLogQuery(
+      { time_text: '2026-07-03', files: [fixture], keyword: 'ERROR', levels: 'errors' },
+      cfg,
+      new AbortController().signal,
+    )
+    // demo.log 中 ERROR 行才计入（keyword 与 levels 双条件）
+    expect(r.filter.total_matched).toBeGreaterThan(0)
+    expect(r.filter.keyword).toBe('ERROR')
+    expect(r.filter.levels).toEqual(['errors'])
+    expect(r.filter.lines.every((l) => /ERROR/i.test(l.raw))).toBe(true)
+  })
+
+  it('output schema 容忍 keyword/levels（canonical 值校验仍过）', async () => {
+    // host.test 的 canonical 校验已覆盖；此处确认返回类型字段存在
+    const r = await runLogQuery(
+      { time_text: '2026-07-03', files: [fixture] },
+      cfg,
+      new AbortController().signal,
+    )
+    expect(r.filter.keyword).toBeNull()
+    expect(r.filter.levels).toBeNull()
+  })
+})

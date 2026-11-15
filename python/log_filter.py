@@ -177,11 +177,50 @@ def _level_key(raw: str) -> str:
     return "others"
 
 
+_VALID_LEVEL_BUCKETS = {"errors", "warns", "infos", "debugs", "others"}
+# 公开只读别名：上层 CLI（lq.py 等）做前置校验用
+VALID_LEVEL_BUCKETS = frozenset(_VALID_LEVEL_BUCKETS)
+
+
+def _make_matcher(keyword: Optional[str], levels: Optional[Sequence[str]]):
+    """构造 (keyword, levels) 组合谓词；两者都为空时返回 None（零开销直通）。
+
+    - keyword：大小写不敏感的子串匹配（对原始行）；
+    - levels：级别分桶名列表（errors/warns/infos/debugs/others），
+      用与统计一致的词边界规则识别；未知分桶名抛 ValueError（防拼写错误静默过滤掉一切）。
+    """
+    kw = keyword.strip().lower() if keyword else None
+    if kw == "":
+        kw = None
+    level_set = None
+    if levels is not None:
+        level_set = {s.strip().lower() for s in levels if s and s.strip()}
+        unknown = level_set - _VALID_LEVEL_BUCKETS
+        if unknown:
+            raise ValueError(
+                "未知的日志级别分桶：%s（可选：%s）"
+                % (", ".join(sorted(unknown)), "/".join(sorted(_VALID_LEVEL_BUCKETS))))
+        if not level_set:
+            level_set = None
+    if kw is None and level_set is None:
+        return None
+
+    def match(ll: LogLine) -> bool:
+        if kw is not None and kw not in ll.raw.lower():
+            return False
+        if level_set is not None and _level_key(ll.raw) not in level_set:
+            return False
+        return True
+
+    return match
+
+
 class _TopKStats:
     """流式 Top-K（按时间戳保留最大 max_lines 条）+ 全量计数，内存 O(max_lines)。"""
 
-    def __init__(self, max_lines: int):
+    def __init__(self, max_lines: int, matcher=None):
         self.k = max_lines
+        self.matcher = matcher
         self.heap: list[tuple] = []
         self.seq = 0
         self.total = 0
@@ -193,6 +232,8 @@ class _TopKStats:
             return
         self.found = True
         if tr.start <= ll.timestamp < tr.end:
+            if self.matcher is not None and not self.matcher(ll):
+                return
             self.total += 1
             self.stats[_level_key(ll.raw)] += 1
             heapq.heappush(self.heap, (ll.timestamp, self.seq, ll))
@@ -210,22 +251,32 @@ class _TopKStats:
 
 
 def filter_stream(lines: Iterable[str], tr, *, max_lines: int = 500,
-                  source: str = "stream") -> FilterResult:
-    """对行迭代器（如 journalctl stdout）做窗口过滤 + Top-K + 全量统计。"""
-    acc = _TopKStats(max_lines)
+                  source: str = "stream", keyword: Optional[str] = None,
+                  levels: Optional[Sequence[str]] = None) -> FilterResult:
+    """对行迭代器（如 journalctl stdout）做窗口过滤 + Top-K + 全量统计。
+
+    keyword：大小写不敏感子串，命中原始行才计入（None=不过滤）；
+    levels：级别分桶名列表（errors/warns/infos/debugs/others），None=不过滤；
+    total_matched 与 stats 均为"窗口 + keyword + levels"全条件命中后的计数。
+    """
+    acc = _TopKStats(max_lines, _make_matcher(keyword, levels))
     for ll in iter_filter_lines(lines, tr):
         acc.add(ll, tr)
     return acc.result({source: acc.total}, {})
 
 
 def filter_logs(paths: Sequence[str], tr, *, max_lines: int = 500,
-                encoding: str = "auto", errors: str = "replace") -> FilterResult:
+                encoding: str = "auto", errors: str = "replace",
+                keyword: Optional[str] = None,
+                levels: Optional[Sequence[str]] = None) -> FilterResult:
     """多文件流式过滤合并：窗口内行按时间升序保留最后 max_lines 条，全量统计。
 
     - 内存峰值 O(max_lines)，与文件总行数无关（GB 级日志不 OOM）；
-    - 单文件打开/读取失败记入 file_errors 并继续处理其余文件。
+    - 单文件打开/读取失败记入 file_errors 并继续处理其余文件；
+    - keyword/levels 语义同 filter_stream（file_stats 同样只计全条件命中行）。
     """
-    acc = _TopKStats(max_lines)
+    matcher = _make_matcher(keyword, levels)
+    acc = _TopKStats(max_lines, matcher)
     file_stats = {}
     file_errors = {}
     for path in paths:
@@ -233,7 +284,8 @@ def filter_logs(paths: Sequence[str], tr, *, max_lines: int = 500,
         try:
             for ll in iter_filter_log(path, tr, encoding=encoding, errors=errors):
                 if ll.timestamp is not None and tr.start <= ll.timestamp < tr.end:
-                    count += 1
+                    if matcher is None or matcher(ll):
+                        count += 1
                     acc.add(ll, tr)
         except LogFormatError as exc:
             file_errors[str(path)] = str(exc)

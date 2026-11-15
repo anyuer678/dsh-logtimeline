@@ -29,6 +29,10 @@ export interface LogQueryArgs {
   since?: string
   /** IANA timezone name, e.g. `Asia/Shanghai`. */
   timezone?: string
+  /** 子串过滤（大小写不敏感，命中原始行才计入） */
+  keyword?: string
+  /** 级别分桶过滤，逗号分隔：errors,warns,infos,debugs,others */
+  levels?: string
 }
 
 /** Canonical result of a log query, mirroring `lq --json` output. */
@@ -44,6 +48,8 @@ export interface LogQueryResult {
     total_matched: number
     truncated: boolean
     time_span_found: boolean
+    keyword?: string | null
+    levels?: string[] | null
     file_stats: Record<string, number>
     file_errors: Record<string, string>
     stats: { errors: number; warns: number; infos: number; debugs: number; others: number }
@@ -106,6 +112,8 @@ export async function runLogQuery(
   }
   if (args.since) argv.push('--since', args.since)
   if (args.timezone) argv.push('--timezone', args.timezone)
+  if (args.keyword) argv.push('--keyword', args.keyword)
+  if (args.levels) argv.push('--levels', args.levels)
 
   // 逐个候选尝试：`python` 不存在时回退 Windows `py -3` launcher；spawn 之外的错误直接抛出
   const { stdout, stderr, code } = await runWithFallback(argv, cfg, signal)

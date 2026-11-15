@@ -37,6 +37,8 @@ export function registerTool(ctx: Context, rawConfig: unknown): void {
       max_lines: { type: 'number', description: '最多返回行数（默认 500；0 = 只统计不返回行）' },
       since: { type: 'string', description: '时间解析失败时的 RFC3339 绝对时间兜底' },
       timezone: { type: 'string', description: 'IANA 时区名，如 Asia/Shanghai' },
+      keyword: { type: 'string', description: '子串过滤（大小写不敏感，命中原始行才计入）' },
+      levels: { type: 'string', description: '级别分桶过滤，逗号分隔：errors,warns,infos,debugs,others' },
     },
     output: {
       schema: {
@@ -61,6 +63,13 @@ export function registerTool(ctx: Context, rawConfig: unknown): void {
               total_matched: { type: 'number' },
               truncated: { type: 'boolean' },
               time_span_found: { type: 'boolean' },
+              keyword: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+              levels: {
+                oneOf: [
+                  { type: 'array', items: { type: 'string' } },
+                  { type: 'null' },
+                ],
+              },
               file_stats: { type: 'object', additionalProperties: true },
               file_errors: { type: 'object', additionalProperties: true },
               stats: { type: 'object', additionalProperties: true },
