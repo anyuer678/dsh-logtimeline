@@ -11,6 +11,7 @@ parser are the source of truth; this table helps users and reviewers.
 | T02 | Yesterday | 昨天 / 昨晚 | Previous calendar day (昨晚 = 18:00–24:00) | Yes (`T02a/b`) |
 | T03 | Day before | 前天 | -2 days | Yes (`T03`) |
 | T18 | Tomorrow | 明天 | Next calendar day (whole day) | Yes (`T18`, 2026-11-16) |
+| T19 | Weekday + range | 上周三 14:00-15:00 | Weekday window clipped to time range | Yes（实测 2026-11-16，原表漏列已有能力） |
 | T04 | Relative hours | 3 小时前 | now-3h .. now | Yes (`T04a`) |
 | T04b | 半小时前 | 半小时前 | now-30m .. now | Yes (`T04b`, 2026-11-14) |
 | T05 | Relative minutes | 30 分钟前 | now-30m .. now | Yes (`T05`) |
