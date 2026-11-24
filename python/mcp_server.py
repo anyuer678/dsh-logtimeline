@@ -4,6 +4,10 @@
 工具：
   log_query —— 中文自然语言时间表达式查日志（如「昨天下午」「3小时前」），
                返回 JSON：时间范围 + 命中行 + ERROR/WARN/INFO 统计。
+  parse_time —— 只解析时间表达式，返回时间范围（不读日志）。
+
+两个工具都强制 `--no-llm`：MCP 包装层承诺「完全离线、日志不出本机」，
+不能因为宿主机恰好在环境变量里配了 LLM_* 就把日志样本发到外部接口。
 """
 from __future__ import annotations
 
@@ -12,6 +16,7 @@ import os
 import subprocess
 import sys
 
+from lq_args import build_log_query_argv, build_parse_time_argv
 from mcp.server.mcpserver import MCPServer
 
 _LQ = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lq.py")
@@ -44,7 +49,7 @@ def _run_lq(extra: list[str]) -> dict:
     description=(
         "用中文自然语言时间表达式查询本机日志文件。"
         "例句：log_query(time_text='昨天下午', dir='/var/log')、"
-        "log_query(time_text='3小时前', files=['app.log'])。"
+        "log_query(time_text='3小时前', files=['app.log', 'worker.log'])。"
         "返回 JSON：解析出的时间范围、命中行、ERROR/WARN/INFO 统计。完全离线，日志不出本机。"
     ),
 )
@@ -56,17 +61,14 @@ def log_query(
     max_lines: int = 200,
     timezone: str | None = None,
 ) -> dict:
-    extra = [time_text, "--max-lines", str(max(int(max_lines), 0))]
-    if dir:
-        extra += ["--dir", str(dir)]
-    if files:
-        for f in files:
-            extra += ["--files", str(f)]
-    if pattern and dir:
-        extra += ["--pattern", str(pattern)]
-    if timezone:
-        extra += ["--timezone", str(timezone)]
-    return _run_lq(extra)
+    return _run_lq(build_log_query_argv(
+        time_text,
+        files=files,
+        directory=dir,
+        pattern=pattern,
+        max_lines=max_lines,
+        timezone=timezone,
+    ))
 
 
 @server.tool(
@@ -77,10 +79,7 @@ def log_query(
     ),
 )
 def parse_time(time_text: str, timezone: str | None = None) -> dict:
-    extra = [time_text, "--dry-run", "--max-lines", "0"]
-    if timezone:
-        extra += ["--timezone", str(timezone)]
-    return _run_lq(extra)
+    return _run_lq(build_parse_time_argv(time_text, timezone=timezone))
 
 
 def main() -> None:
