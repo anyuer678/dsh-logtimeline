@@ -15,7 +15,7 @@
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue.svg"></a>
   <a href="https://github.com/anyuer678/logtimeline"><img alt="Upstream" src="https://img.shields.io/badge/powered%20by-LogTimeline-42b883"></a>
   <a href="https://awesome-dsh-plugin.com"><img alt="Awesome DSH Plugin" src="https://awesome-dsh-plugin.com/badge.svg"></a>
-  <img alt="Tests" src="https://img.shields.io/badge/tests-57%20passed-brightgreen">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-60%20passed-brightgreen">
   <img alt="Offline" src="https://img.shields.io/badge/offline-first-4b6fff">
 </p>
 
@@ -54,7 +54,7 @@ dsh plugin --profile web add dshmarket
 # then: Settings → Plugin Market → search "dsh-logtimeline" → one-click install
 ```
 
-**Compatibility**: tested against `@deepseek-ai/dsh-tools@0.1.0-rc.6` (current harness release line, e.g. `dsh-base@0.1.0-rc.5`).
+**Compatibility**: tested against `@deepseek-ai/dsh-tools@0.2.2-rc.5` (current `next` release line, 2026-11-18; cordis `~4.1.0`).
 
 ## Usage
 
@@ -110,7 +110,7 @@ npm run build
 python scripts/run-upstream-tests.py   # upstream LogTimeline pytest suite against the vendored code
 ```
 
-`tests/query.test.ts` runs the real vendored Python CLI against fixture logs; `tests/host.test.ts` loads the built plugin (`lib/`) into a minimal Cordis container, applies it, and validates the canonical value against the `output.schema` contract. Peer packages (`@deepseek-ai/dsh-*`, pinned to the `0.1.0-rc.6` line) are installed as devDependencies so the runtime import chain resolves outside a DSH host.
+`tests/query.test.ts` runs the real vendored Python CLI against fixture logs; `tests/host.test.ts` loads the built plugin (`lib/`) into a minimal Cordis container, applies it, and validates the canonical value against the `output.schema` contract. Peer packages (`@deepseek-ai/dsh-*`, pinned to the `0.2.2-rc.5` line) are installed as devDependencies so the runtime import chain resolves outside a DSH host.
 
 ## Security & Privacy
 

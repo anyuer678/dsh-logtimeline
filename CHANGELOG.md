@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-11-24
+
+### Fixed
+- **MCP 多文件查询只剩最后一个文件**：`python/mcp_server.py` 逐个追加 `--files`，而 `lq.py` 的 `--files` 是 argparse `nargs='+'`，同一选项重复出现时后者覆盖前者。现改为一次性传全部文件；参数拼装抽到 `python/lq_args.py`，新增 `tests/mcp_args.test.ts` 回归。
+- **MCP 未强制离线**：包装层没有向 CLI 传 `--no-llm`，宿主机存在 `LLM_*` 环境变量时会把日志样本发往外部接口，与工具描述「完全离线、日志不出本机」不符。现固定 `--no-llm`。
+
+### Changed
+- 适配 DSH `0.2.2-rc.5` 发布线：`dsh-tools` / `dsh-llm` / `dsh-agent` / `dsh-scope` / `dsh-session` / `dsh-session-projection` / `dsh-session-persistence` / `dsh-system-prompt` / `dsh-user-approval` / `dsh-timeout` / `dsh-workspace` / `dsh-util-values` / `dsh-typert-protocol` / `dsh-error` / `dsh-storage` / `dsh-storage-domain` 统一 `0.2.2-rc.5`。
+- `@deepseek-ai/cordis` `4.0.4` → `~4.1.0`（`dsh-tools@0.2.2-rc.5` 的 peer 要求）。
+- `dsh-code-runtime` 跟随独立线 `0.1.5-rc.3`；`dsh-invariants` 保持 `0.2.0-rc.2`。
+- 测试数 57 → 60（新增 3 条 MCP 参数拼装回归）。
+
+### Verified
+- `npm run typecheck` 通过；`npm test` 60/60 通过（Node 22.22 / Python 3.13 / Windows）。
+- 真实执行验证：两个 fixture 文件的命中行均进入 `file_stats`，`total_matched = 25 + 4 = 29`。
+
 ## Unreleased
 
 - a588ad2 ci: 添加依赖安全审计步骤（npm audit / pip-audit）

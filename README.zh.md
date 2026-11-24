@@ -52,7 +52,7 @@ dsh plugin --profile web add dshmarket
 # 然后：Settings → Plugin Market → 搜索 dsh-logtimeline → 一键安装
 ```
 
-**兼容性**：测试于 `@deepseek-ai/dsh-tools@0.1.0-rc.6`（当前发布线，如 `dsh-base@0.1.0-rc.5`）。
+**兼容性**：测试于 `@deepseek-ai/dsh-tools@0.2.2-rc.5`（当前 `next` 发布线，2026-11-18；cordis `~4.1.0`）。
 
 ## 使用
 
@@ -108,7 +108,7 @@ npm run build
 python scripts/run-upstream-tests.py   # 用 vendored 代码跑上游 124 例 pytest
 ```
 
-`tests/query.test.ts` 用 fixture 日志跑真实 vendored Python；`tests/host.test.ts` 把编译产物（`lib/`）加载进最小 cordis 容器，验证 apply、execute 与 `output.schema` 契约。peer 包（`@deepseek-ai/dsh-*`，0.1.0-rc.6 线）装在 devDependencies，使独立环境下运行时 import 链可解析。
+`tests/query.test.ts` 用 fixture 日志跑真实 vendored Python；`tests/host.test.ts` 把编译产物（`lib/`）加载进最小 cordis 容器，验证 apply、execute 与 `output.schema` 契约。peer 包（`@deepseek-ai/dsh-*`，0.2.2-rc.5 线）装在 devDependencies，使独立环境下运行时 import 链可解析。
 
 ## 安全与隐私
 

@@ -24,7 +24,8 @@ Exact host commit / version pins used in CI:
 
 | Date | Host / runner | CI signal |
 |------|----------------|-----------|
-| 2026-09 | GitHub Actions Test + secret-scan | See badge / Actions latest run on `main` |
+| 2026-11 | DSH `0.2.2-rc.5` + cordis `4.1.0`, GitHub Actions Test + secret-scan | See badge / Actions latest run on `main` |
+| 2026-09 | DSH `0.1.0-rc.6` line, GitHub Actions Test + secret-scan | Historical |
 
 > If Actions is green on `main`, the **in-repo vitest + security tests** passed.
 > Upstream vendored Python suite (see `python/VENDORED.md`) is run when
@@ -34,8 +35,8 @@ Exact host commit / version pins used in CI:
 
 | Item | Support |
 |------|---------|
-| Node | 18+ (CI uses current LTS on Actions) |
-| Python | 3.10+ for vendored CLI (`py` launcher on Windows) |
+| Node | 22.19+ (`package.json` engines; CI uses `.nvmrc`) |
+| Python | 3.9+ for vendored CLI (`py` launcher on Windows) |
 | OS | Linux CI primary; Windows path probing supported via `py` |
 | Network | **Not required** for log query (offline-first) |
 
